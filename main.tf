@@ -102,10 +102,6 @@ resource "azurerm_windows_virtual_machine" "vm" {
     version   = "latest"
   }
 
-  # Optional: Enable boot diagnostics
-  boot_diagnostics {
-    storage_account_uri = azurerm_storage_account.diag.primary_blob_endpoint
-  }
 }
 
 
