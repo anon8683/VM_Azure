@@ -1,3 +1,8 @@
+variable "vm_count" {
+  type    = number
+  default = 2 # change this to however many you want
+}
+
 
 variable "subscription_id" {
   description = "The Azure subscription ID where resources will be created."
@@ -36,7 +41,7 @@ variable "subnet_name" {
 variable "vm_name" {
   description = "The name of the virtual machine to create."
   type        = string
-  default     = "vm-terraform-lab"
+  default     = "VM-"
 }
 
 variable "admin_username" {
