@@ -54,15 +54,39 @@ resource "azurerm_network_interface" "nic" {
   }
 }
 
-resource "azurerm_linux_virtual_machine" "vm" {
-  count                           = var.vm_count
-  name                            = "${var.vm_name}-${count.index + 1}"
-  resource_group_name             = azurerm_resource_group.rg.name
-  location                        = azurerm_resource_group.rg.location
-  size                            = "Standard_DS1_v2"
-  admin_username                  = var.admin_username
-  admin_password                  = var.admin_password
-  disable_password_authentication = false
+# resource "azurerm_linux_virtual_machine" "vm" {
+#   count                           = var.vm_count
+#   name                            = "${var.vm_name}-${count.index + 1}"
+#   resource_group_name             = azurerm_resource_group.rg.name
+#   location                        = azurerm_resource_group.rg.location
+#   size                            = "Standard_DS1_v2"
+#   admin_username                  = var.admin_username
+#   admin_password                  = var.admin_password
+#   disable_password_authentication = false
+
+#   network_interface_ids = [azurerm_network_interface.nic[count.index].id]
+
+#   os_disk {
+#     caching              = "ReadWrite"
+#     storage_account_type = "Standard_LRS"
+#   }
+
+#   source_image_reference {
+#     publisher = "Canonical"
+#     offer     = "0001-com-ubuntu-server-jammy"
+#     sku       = "22_04-lts-gen2"
+#     version   = "latest"
+#   }
+# }
+
+resource "azurerm_windows_virtual_machine" "vm" {
+  count               = var.vm_count
+  name                = "${var.vm_name}-${count.index + 1}"
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.rg.location
+  size                = "Standard_B2ms" # Minimum spec that supports RDP
+  admin_username      = var.admin_username
+  admin_password      = var.admin_password
 
   network_interface_ids = [azurerm_network_interface.nic[count.index].id]
 
@@ -72,12 +96,18 @@ resource "azurerm_linux_virtual_machine" "vm" {
   }
 
   source_image_reference {
-    publisher = "Canonical"
-    offer     = "0001-com-ubuntu-server-jammy"
-    sku       = "22_04-lts-gen2"
+    publisher = "MicrosoftWindowsServer"
+    offer     = "WindowsServer"
+    sku       = "2019-Datacenter"
     version   = "latest"
   }
+
+  # Optional: Enable boot diagnostics
+  boot_diagnostics {
+    storage_account_uri = azurerm_storage_account.diag.primary_blob_endpoint
+  }
 }
+
 
 resource "azurerm_network_security_group" "nsg" {
   name                = "${var.vm_name}-nsg"
@@ -85,13 +115,13 @@ resource "azurerm_network_security_group" "nsg" {
   resource_group_name = azurerm_resource_group.rg.name
 
   security_rule {
-    name                       = "SSH"
+    name                       = "RDP-Allow"
     priority                   = 1001
     direction                  = "Inbound"
     access                     = "Allow"
     protocol                   = "Tcp"
     source_port_range          = "*"
-    destination_port_ranges    = ["22"]
+    destination_port_ranges    = ["3389"]
     source_address_prefix      = "*"
     destination_address_prefix = "*"
   }
