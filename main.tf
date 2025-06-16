@@ -74,8 +74,8 @@ resource "azurerm_network_interface_security_group_association" "nic_nsg_assoc" 
 
 
 
-resource "azurerm_linux_virtual_machine" "vm-01" {
-  name                            = var.vm_name
+resource "azurerm_linux_virtual_machine" "vm" {
+  name                            = "vm-01"
   resource_group_name             = azurerm_resource_group.rg.name
   location                        = azurerm_resource_group.rg.location
   size                            = "Standard_DS1_v2"
@@ -100,8 +100,8 @@ resource "azurerm_linux_virtual_machine" "vm-01" {
 
 }
 
-resource "azurerm_linux_virtual_machine" "vm-02" {
-  name                            = var.vm_name
+resource "azurerm_linux_virtual_machine" "vm" {
+  name                            = "vm-02"
   resource_group_name             = azurerm_resource_group.rg.name
   location                        = azurerm_resource_group.rg.location
   size                            = "Standard_DS1_v2"
