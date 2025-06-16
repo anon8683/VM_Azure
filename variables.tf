@@ -1,6 +1,6 @@
 variable "vm_count" {
   type    = number
-  default = 1 # change this to however many you want
+  default = 0 # change this to however many you want
 }
 
 
